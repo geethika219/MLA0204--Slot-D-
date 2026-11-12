@@ -1,0 +1,71 @@
+
+import math
+
+# Play Tennis dataset
+data = [
+    ['Sunny', 'Hot', 'High', 'Weak', 'No'],
+    ['Sunny', 'Hot', 'High', 'Strong', 'No'],
+    ['Overcast', 'Hot', 'High', 'Weak', 'Yes'],
+    ['Rain', 'Mild', 'High', 'Weak', 'Yes'],
+    ['Rain', 'Cool', 'Normal', 'Weak', 'Yes'],
+    ['Rain', 'Cool', 'Normal', 'Strong', 'No'],
+    ['Overcast', 'Cool', 'Normal', 'Strong', 'Yes'],
+    ['Sunny', 'Mild', 'High', 'Weak', 'No'],
+    ['Sunny', 'Cool', 'Normal', 'Weak', 'Yes'],
+    ['Rain', 'Mild', 'Normal', 'Weak', 'Yes'],
+    ['Sunny', 'Mild', 'Normal', 'Strong', 'Yes'],
+    ['Overcast', 'Mild', 'High', 'Strong', 'Yes'],
+    ['Overcast', 'Hot', 'Normal', 'Weak', 'Yes'],
+    ['Rain', 'Mild', 'High', 'Strong', 'No']
+]
+
+# Split dataset
+train = data[:10]
+test = data[10:]
+
+classes = ['No', 'Yes']
+
+# Naive Bayes prediction
+def predict(sample):
+    scores = {}
+
+    for c in classes:
+        rows = [r for r in train if r[-1] == c]
+
+        score = math.log(len(rows) / len(train))
+
+        for i, value in enumerate(sample):
+            values = set(r[i] for r in train)
+            count = sum(r[i] == value for r in rows)
+
+            probability = (count + 1) / (len(rows) + len(values))
+            score += math.log(probability)
+
+        scores[c] = score
+
+    return max(scores, key=scores.get)
+
+# Predictions
+actual = [r[-1] for r in test]
+predicted = [predict(r[:-1]) for r in test]
+
+print("Actual Values:", actual)
+print("Predicted Values:", predicted)
+
+# Confusion matrix
+labels = ['No', 'Yes']
+
+matrix = [[0, 0], [0, 0]]
+
+for a, p in zip(actual, predicted):
+    matrix[labels.index(a)][labels.index(p)] += 1
+
+print("\nConfusion Matrix:")
+for row in matrix:
+    print(row)
+
+# Accuracy
+correct = sum(a == p for a, p in zip(actual, predicted))
+accuracy = (correct / len(actual)) * 100
+
+print("\nAccuracy:", accuracy, "%")
