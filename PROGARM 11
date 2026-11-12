@@ -1,0 +1,52 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Sample dataset
+data = {
+    'Income': [30000, 50000, 70000, 25000, 90000,
+               45000, 80000, 35000, 60000, 100000],
+    'Age': [25, 35, 45, 22, 50, 30, 48, 28, 40, 55],
+    'Loan': [10000, 15000, 20000, 5000, 10000,
+             12000, 15000, 8000, 18000, 12000],
+    'CreditScore': [
+        'Low', 'Medium', 'High', 'Low', 'High',
+        'Medium', 'High', 'Low', 'Medium', 'High'
+    ]
+}
+
+df = pd.DataFrame(data)
+
+X = df[['Income', 'Age', 'Loan']]
+y = df['CreditScore']
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42
+)
+
+# Train model
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Prediction
+y_pred = model.predict(X_test)
+
+print("Actual Values:")
+print(y_test.values)
+
+print("Predicted Values:")
+print(y_pred)
+
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print(classification_report(y_test, y_pred, zero_division=0))
+
+# New prediction
+new_data = pd.DataFrame(
+    [[65000, 35, 12000]],
+    columns=['Income', 'Age', 'Loan']
+)
+
+print("New Credit Score:", model.predict(new_data)[0])
